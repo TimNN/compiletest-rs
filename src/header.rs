@@ -125,42 +125,42 @@ impl EarlyProps {
 
 #[derive(Clone, Debug)]
 pub struct TestProps {
-    // Lines that should be expected, in order, on standard out
+    /// Lines that should be expected, in order, on standard out
     pub error_patterns: Vec<String> ,
-    // Extra flags to pass to the compiler
+    /// Extra flags to pass to the compiler
     pub compile_flags: Vec<String>,
-    // Extra flags to pass when the compiled code is run (such as --bench)
+    /// Extra flags to pass when the compiled code is run (such as --bench)
     pub run_flags: Option<String>,
-    // If present, the name of a file that this test should match when
-    // pretty-printed
+    /// If present, the name of a file that this test should match when
+    /// pretty-printed
     pub pp_exact: Option<PathBuf>,
-    // Other crates that should be compiled (typically from the same
-    // directory as the test, but for backwards compatibility reasons
-    // we also check the auxiliary directory)
+    /// Other crates that should be compiled (typically from the same
+    /// directory as the test, but for backwards compatibility reasons
+    /// we also check the auxiliary directory)
     pub aux_builds: Vec<String> ,
-    // Environment settings to use for compiling
+    /// Environment settings to use for compiling
     pub rustc_env: Vec<(String,String)> ,
-    // Environment settings to use during execution
+    /// Environment settings to use during execution
     pub exec_env: Vec<(String,String)> ,
-    // Lines to check if they appear in the expected debugger output
+    /// Lines to check if they appear in the expected debugger output
     pub check_lines: Vec<String> ,
-    // Build documentation for all specified aux-builds as well
+    /// Build documentation for all specified aux-builds as well
     pub build_aux_docs: bool,
-    // Flag to force a crate to be built with the host architecture
+    /// Flag to force a crate to be built with the host architecture
     pub force_host: bool,
-    // Check stdout for error-pattern output as well as stderr
+    /// Check stdout for error-pattern output as well as stderr
     pub check_stdout: bool,
-    // Don't force a --crate-type=dylib flag on the command line
+    /// Don't force a --crate-type=dylib flag on the command line
     pub no_prefer_dynamic: bool,
-    // Run --pretty expanded when running pretty printing tests
+    /// Run --pretty expanded when running pretty printing tests
     pub pretty_expanded: bool,
-    // Which pretty mode are we testing with, default to 'normal'
+    /// Which pretty mode are we testing with, default to 'normal'
     pub pretty_mode: String,
-    // Only compare pretty output and don't try compiling
+    /// Only compare pretty output and don't try compiling
     pub pretty_compare_only: bool,
-    // Patterns which must not appear in the output of a cfail test.
+    /// Patterns which must not appear in the output of a cfail test.
     pub forbid_output: Vec<String>,
-    // Revisions to test for incremental compilation.
+    /// Revisions to test for incremental compilation.
     pub revisions: Vec<String>,
     // Directory (if any) to use for incremental compilation.  This is
     // not set by end-users; rather it is set by the incremental
