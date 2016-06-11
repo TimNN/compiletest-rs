@@ -9,7 +9,7 @@
 // except according to those terms.
 
 use common::Config;
-use common::{CompileFail, ParseFail, Pretty, RunFail, RunPass, RunPassValgrind};
+use common::{CompileFail, CompilePass, ParseFail, Pretty, RunFail, RunPass, RunPassValgrind};
 use common::{Codegen, DebugInfoLldb, DebugInfoGdb, Rustdoc, CodegenUnits};
 use common::{Incremental, RunMake, Ui};
 use errors::{self, ErrorKind, Error};
@@ -104,6 +104,7 @@ impl<'test> TestCx<'test> {
     fn run_revision(&self) {
         match self.config.mode {
             CompileFail => self.run_cfail_test(),
+            CompilePass => self.run_cpass_test(),
             ParseFail => self.run_cfail_test(),
             RunFail => self.run_rfail_test(),
             RunPass => self.run_rpass_test(),
@@ -149,6 +150,29 @@ impl<'test> TestCx<'test> {
             self.check_expected_errors(expected_errors, &proc_res);
         } else {
             self.check_error_patterns(&output_to_check, &proc_res);
+        }
+        self.check_no_compiler_crash(&proc_res);
+        self.check_forbid_output(&output_to_check, &proc_res);
+    }
+
+    fn run_cpass_test(&self) {
+        let proc_res = self.compile_test();
+
+        if !proc_res.status.success() {
+            self.fatal_proc_rec(
+                &format!("{} test compilation failed!", self.config.mode)[..],
+                &proc_res);
+        }
+
+        let output_to_check = self.get_output(&proc_res);
+        let expected_errors = errors::load_errors(&self.testpaths.file, self.revision);
+        if !self.props.error_patterns.is_empty() {
+            if !expected_errors.is_empty() {
+                self.fatal("both error pattern and expected errors specified");
+            }
+            self.check_error_patterns(&output_to_check, &proc_res);
+        } else {
+            self.check_expected_errors(expected_errors, &proc_res);
         }
         self.check_no_compiler_crash(&proc_res);
         self.check_forbid_output(&output_to_check, &proc_res);
@@ -995,10 +1019,6 @@ actual:\n\
     fn check_expected_errors(&self,
                              expected_errors: Vec<errors::Error>,
                              proc_res: &ProcRes) {
-        if proc_res.status.success() {
-            self.fatal_proc_rec("process did not return an error status", proc_res);
-        }
-
         let file_name =
             format!("{}", self.testpaths.file.display())
             .replace(r"\", "/"); // on windows, translate all '\' path separators to '/'
@@ -1318,6 +1338,7 @@ actual:\n\
 
         match self.config.mode {
             CompileFail |
+            CompilePass |
             ParseFail |
             Incremental => {
                 // If we are extracting and matching errors in the new

@@ -16,6 +16,7 @@ use std::path::PathBuf;
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Mode {
     CompileFail,
+    CompilePass,
     ParseFail,
     RunFail,
     RunPass,
@@ -36,6 +37,7 @@ impl FromStr for Mode {
     fn from_str(s: &str) -> Result<Mode, ()> {
         match s {
           "compile-fail" => Ok(CompileFail),
+          "compile-pass" => Ok(CompilePass),
           "parse-fail" => Ok(ParseFail),
           "run-fail" => Ok(RunFail),
           "run-pass" => Ok(RunPass),
@@ -58,6 +60,7 @@ impl fmt::Display for Mode {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::Display::fmt(match *self {
             CompileFail => "compile-fail",
+            CompilePass => "compile-pass",
             ParseFail => "parse-fail",
             RunFail => "run-fail",
             RunPass => "run-pass",
